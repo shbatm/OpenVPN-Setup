@@ -91,7 +91,7 @@ openvpn --genkey --secret keys/ta.key
 
 # Write config file for server using the template .txt file
 #sed 's/LOCALIP/'$LOCALIP'/' <$DIR/server_config.txt >/etc/openvpn/server.conf
-sudo cp $DIR/server_config.txt /etc/openvpn/server.conf
+cp $DIR/server_config.txt /etc/openvpn/server.conf
 if [ $ENCRYPT = 2048 ]; then
  sed -i 's:dh1024:dh2048:' /etc/openvpn/server.conf
 fi
@@ -101,18 +101,19 @@ sed -i '/#net.ipv4.ip_forward=1/c\
 net.ipv4.ip_forward=1' /etc/sysctl.conf
 sysctl -p
 
-exit
 
 # Write script to run openvpn and allow it through firewall on boot using the template .txt file
 #sed 's/LOCALIP/'$LOCALIP'/' <$DIR/firewall-openvpn-rules.txt >/etc/firewall-openvpn-rules.sh
-sudo cp $DIR/firewall-openvpn-rules.txt /etc/firewall-openvpn-rules.sh
-sudo chmod 700 /etc/firewall-openvpn-rules.sh
-sudo chown root /etc/firewall-openvpn-rules.sh
+cp $DIR/firewall-openvpn-rules.txt /etc/firewall-openvpn-rules.sh
 sed -i -e '$i \/etc/firewall-openvpn-rules.sh\n' /etc/rc.local
+chmod 700 /etc/firewall-openvpn-rules.sh
+chown root /etc/firewall-openvpn-rules.sh
 #sed -i -e '$i \sudo service openvpn start\n' /etc/rc.local # Handled by INITSCRIPT
 
 # Write default file for client .ovpn profiles, to be used by the MakeOVPN script, using template .txt file
 sed 's/PUBLICIP/'$PUBLICIP'/' <$DIR/Default.txt >/etc/openvpn/easy-rsa/keys/Default.txt
+
+exit
 
 # Make directory under home directory for .ovpn profiles
 mkdir ~/ovpns
