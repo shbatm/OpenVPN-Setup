@@ -1,3 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j SNAT --to-source LOCALIP
+# Set the interface to listen on:
+IFACE='eth0'
+
+# Get the Local IP Address
+_IP=( `/sbin/ifconfig $IFACE | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'` )
+
+# Setup IPTABLES rules for OpenVPN
+iptables -t nat -A INPUT -i $IFACE -p udp -m udp --dport 1194 -j ACCEPT
+iptables -t nat -A INPUT -i $IFACE -p tcp -m tcp --dport 88 -j ACCEPT
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $IFACE -j SNAT --to-source $_IP

@@ -18,18 +18,18 @@ apt-get -y install openvpn
 apt-get install easy-rsa
 
 # Read the local and public IP addresses from the user
-LOCALIP=$(whiptail --inputbox "What is your Raspberry Pi's local IP address?" \
-8 78 --title "Setup OpenVPN" 3>&1 1>&2 2>&3)
-exitstatus=$?
-if [ $exitstatus = 0 ]; then
- whiptail --title "Setup OpenVPN" --infobox "Local IP: $LOCALIP" 8 78
-else
- whiptail --title "Setup OpenVPN" --infobox "Cancelled" 8 78
- exit
-fi
+#LOCALIP=$(whiptail --inputbox "What is your Raspberry Pi's local IP address?" \
+#8 78 --title "Setup OpenVPN" 3>&1 1>&2 2>&3)
+#exitstatus=$?
+#if [ $exitstatus = 0 ]; then
+# whiptail --title "Setup OpenVPN" --infobox "Local IP: $LOCALIP" 8 78
+#else
+# whiptail --title "Setup OpenVPN" --infobox "Cancelled" 8 78
+# exit
+#fi
 
-PUBLICIP=$(whiptail --inputbox "What is the public IP address of network the \
-Raspberry Pi is on?" 8 78 --title "OpenVPN Setup" 3>&1 1>&2 2>&3)
+PUBLICIP=$(whiptail --inputbox "What is the public IP address or DynDNS Address \
+of network the Raspberry Pi is on?" 8 78 --title "OpenVPN Setup" 3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus = 0 ]; then
  whiptail --title "Setup OpenVPN" --infobox "PUBLIC IP: $PUBLICIP" 8 78
@@ -78,7 +78,8 @@ information for the server. Press 'Enter' to skip a field." 8 78
 openvpn --genkey --secret keys/ta.key
 
 # Write config file for server using the template .txt file
-sed 's/LOCALIP/'$LOCALIP'/' </home/pi/OpenVPN-Setup/server_config.txt >/etc/openvpn/server.conf
+#sed 's/LOCALIP/'$LOCALIP'/' </home/pi/OpenVPN-Setup/server_config.txt >/etc/openvpn/server.conf
+sudo cp /home/pi/OpenVPN-Setup/server_config.txt /etc/openvpn/server.conf
 if [ $ENCRYPT = 2048 ]; then
  sed -i 's:dh1024:dh2048:' /etc/openvpn/server.conf
 fi
@@ -89,7 +90,8 @@ net.ipv4.ip_forward=1' /etc/sysctl.conf
 sudo sysctl -p
 
 # Write script to run openvpn and allow it through firewall on boot using the template .txt file
-sed 's/LOCALIP/'$LOCALIP'/' </home/pi/OpenVPN-Setup/firewall-openvpn-rules.txt >/etc/firewall-openvpn-rules.sh
+#sed 's/LOCALIP/'$LOCALIP'/' </home/pi/OpenVPN-Setup/firewall-openvpn-rules.txt >/etc/firewall-openvpn-rules.sh
+sudo cp firewall-openvpn-rules.txt /etc/firewall-openvpn-rules.sh
 sudo chmod 700 /etc/firewall-openvpn-rules.sh
 sudo chown root /etc/firewall-openvpn-rules.sh
 sed -i -e '$i \/etc/firewall-openvpn-rules.sh\n' /etc/rc.local
