@@ -54,6 +54,9 @@ of encryption:" 8 78 2 \
 "2048" "Use 2048-bit encryption. This is much slower to set up, but more secure." \
 3>&2 2>&1 1>&3)
 
+# Beast mode
+sudo su
+
 # Copy the easy-rsa files to a directory inside the new openvpn directory
 cp -r /usr/share/easy-rsa /etc/openvpn
 
@@ -96,7 +99,9 @@ fi
 # Enable forwarding of internet traffic
 sed -i '/#net.ipv4.ip_forward=1/c\
 net.ipv4.ip_forward=1' /etc/sysctl.conf
-sudo sysctl -p
+sysctl -p
+
+exit
 
 # Write script to run openvpn and allow it through firewall on boot using the template .txt file
 #sed 's/LOCALIP/'$LOCALIP'/' <$DIR/firewall-openvpn-rules.txt >/etc/firewall-openvpn-rules.sh
