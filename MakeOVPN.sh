@@ -29,7 +29,8 @@ cd /etc/openvpn/easy-rsa
 source ./vars
 ./build-key-pass $NAME
 cd keys
-openssl rsa -in $NAME$OKEY -des3 -out $NAME$KEY
+#openssl rsa -in $NAME$OKEY -des3 -out $NAME$KEY #encrypt key w password
+openssl rsa -in $NAME$OKEY -out $NAME$OKEY
  
 #1st Verify that client�s Public Key Exists 
 if [ ! -f $NAME$CRT ]; then 
@@ -39,11 +40,15 @@ fi
 echo "Client�s cert found: $NAME$CR" 
  
 #Then, verify that there is a private key for that client 
-if [ ! -f $NAME$KEY ]; then 
- echo "[ERROR]: Client 3des Private Key not found: $NAME$KEY" 
+#if [ ! -f $NAME$KEY ]; then 
+# echo "[ERROR]: Client 3des Private Key not found: $NAME$KEY" 
+# exit 
+#fi 
+if [ ! -f $NAME$OKEY ]; then 
+ echo "[ERROR]: Client Private Key not found: $NAME$KEY" 
  exit 
 fi 
-echo "Client�s Private Key found: $NAME$KEY"
+echo "Client�s Private Key found: $NAME$OKEY"
  
 #Confirm the CA public key exists 
 if [ ! -f $CA ]; then 
@@ -75,7 +80,7 @@ echo "</cert>" >> $NAME$FILEEXT
  
 #Then, append the client Private Key 
 echo "<key>" >> $NAME$FILEEXT 
-cat $NAME$KEY >> $NAME$FILEEXT 
+cat $NAME$OKEY >> $NAME$FILEEXT 
 echo "</key>" >> $NAME$FILEEXT 
  
 #Finally, append the TA Private Key 
